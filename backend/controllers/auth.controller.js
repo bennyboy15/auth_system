@@ -2,6 +2,7 @@ import {User} from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { generateVerificationToken } from "../utils/generateVerificationToken.js"
 import {generateTokenAndSetCookie} from "../utils/generateTokenAndSetCookie.js"
+import { sendVerificationEmail } from "../mailtrap/email.js";
 
 export async function signup(req,res){
     try {
@@ -30,6 +31,9 @@ export async function signup(req,res){
         
         // jwt
         generateTokenAndSetCookie(res, newUser._id);
+
+        await sendVerificationEmail(newUser.email, verificationToken);
+
         return res.status(201).json({success:true, message: "User created successfully", user:{...newUser._doc, password:undefined}});
 
     } catch (error) {
