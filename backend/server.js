@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000
 
 app.use(express.json()); // parse req.body as JSON
 app.use(cookieParser()); // parse incoming cookies
-app.use(cors()); // allow frontend to use backend
+app.use(cors({origin:"http://localhost:5173",credentials:true})); // allow frontend to use backend
 
 app.use("/api/auth", authRoutes);
 
