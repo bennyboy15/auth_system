@@ -4,6 +4,7 @@ import { Mail, Lock, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -11,9 +12,16 @@ const LoginPage = () => {
 
 	const { login, isLoading, error } = useAuthStore();
 
+	const navigate = useNavigate()
+
 	const handleLogin = async (e) => {
 		e.preventDefault();
-		await login(email, password);
+		try {
+			await login(email, password);
+			navigate("/");
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
