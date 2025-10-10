@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -21,6 +22,7 @@ const LoginPage = () => {
 			navigate("/");
 		} catch (error) {
 			console.log(error);
+			toast.error("Invalid credentials");
 		}
 	};
 
@@ -58,7 +60,6 @@ const LoginPage = () => {
 							Forgot password?
 						</Link>
 					</div>
-					{error && <p className='text-red-500 font-semibold mb-2'>{error}</p>}
 
 					<motion.button
 						whileHover={{ scale: 1.02 }}
