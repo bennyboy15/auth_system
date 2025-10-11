@@ -110,26 +110,33 @@ export async function forgotPassword(req,res) {
 
 export async function resetPassword(req,res) {
     try {
-        const {token} = req.params;
-        const {password} = req.body;
+		const { token } = req.params;
+		const { password } = req.body;
 
-        const user = await User.findOne({resetPasswordToken:token, resetPasswordExpiresAt:{$gt: Date.now()}});
+		const user = await User.findOne({
+			resetPasswordToken: token,
+			resetPasswordExpiresAt: { $gt: Date.now() },
+		});
 
-        if (!user) return res.status(404).json({success:false, message:"Invalid or expired token!"});
+		if (!user) {
+			return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+		}
 
-        const hashed_password = await bcrypt.hash(password,10); 
-        user.password = hashed_password;
-        user.resetPasswordToken=undefined;
-        user.resetPasswordExpiresAt=undefined;
+		// update password
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-        await user.save();
-        await sendResetSuccessEmail(user.email);
-        res.status(200).json({success:true, message:"Successfully updated password!"});
+		user.password = hashedPassword;
+		user.resetPasswordToken = undefined;
+		user.resetPasswordExpiresAt = undefined;
+		await user.save();
 
-    } catch (error) {
-        console.log("error in reset password ", error);
-		res.status(500).json({ success: false, message: "Server error" });
-    }
+		await sendResetSuccessEmail(user.email);
+
+		res.status(200).json({ success: true, message: "Password reset successful" });
+	} catch (error) {
+		console.log("Error in resetPassword ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
 }
 
 export async function login(req,res){
